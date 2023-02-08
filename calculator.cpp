@@ -3,22 +3,22 @@ namespace np_calculator
 {
     namespace tokenizer
     {
-        void tokenize(const string &expr, bool &err_flag, token& head)
+        void tokenize(const string &expr, bool &err_flag, Token &head)
         {
             string::const_iterator cur = expr.begin();
             string::const_iterator end = num(cur);
-            head = *(new token(NUM, cur, end));
+            head = *(new Token(NUM, cur, end));
             cur = end;
             if (!is_end(cur))
             {
-                error_at(cur - expr.begin(), "contains no-number word");
+                error_at(cur - expr.begin(), "couldn't tokenize");
                 err_flag = 1;
             }
             else
             {
                 err_flag = 0;
             }
-            head.set_next(END, cur, ++cur);
+            head.connect(END, cur, ++cur);
         }
     }
 
@@ -26,6 +26,36 @@ namespace np_calculator
     {
         using tokenizer::go_next_token;
         using tokenizer::TOKENTYPE;
+        Node num(Token &begin)
+        {
+            expect(TOKENTYPE::NUM, begin);
+            string value(begin.get_string());
+            go_next_token(&begin);
+            return Node(NUM, value);
+        }
+        Node parse(const Token &begin)
+        {
+            Token cur = begin;
+            Node head;
+            while (cur.get_type() != TOKENTYPE::END)
+            {
+                Node ncur = num(cur);
+                head = ncur;
+            }
+            return head;
+        };
+        int calculate(const Node &begin)
+        {
+            Node cur = begin;
+            if (cur.get_type() == NUM)
+            {
+                return stodigit(cur.get_value());
+            }
+            else
+            {
+                return 0;
+            }
+        }
     }
     void error_at(int place, string fmt, ...)
     {
@@ -52,13 +82,14 @@ namespace np_calculator
         {
             new_liner::set_attr("exp");
             new_liner::new_line();
+            // string expression("01234");
             string expression;
             cin >> expression;
             if (is_quit(expression))
             {
                 return 0;
             }
-            tokenizer::token cur;
+            tokenizer::Token cur;
             tokenize(expression, err_flag, cur);
             if (err_flag)
             {
@@ -66,7 +97,7 @@ namespace np_calculator
             }
             set_attr("ans");
             new_line();
-            cout << expression << " = " << cur.get_string() << endl;
+            cout << calculate(parse(cur)) << endl;
             delete &cur;
         };
     }

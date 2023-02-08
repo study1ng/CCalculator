@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <cstdarg>
+#include <memory>
 namespace np_calculator
 {
     using std::cerr;
@@ -8,7 +9,7 @@ namespace np_calculator
     using std::cout;
     using std::endl;
     using std::string;
-
+    using std::unique_ptr;
     bool is_quit(string);
     void error_at(int place, string fmt, ...);
 
@@ -20,24 +21,24 @@ namespace np_calculator
             NUM,
             END,
         };
-        class token;
-                class token
+        class Token;
+        class Token
         {
         private:
             TOKENTYPE type;
-            token *next;
+            Token *next;
             string::const_iterator begin;
             string::const_iterator end;
 
         public:
-            token(const TOKENTYPE type, const string &value) : type(type), begin(value.begin()), end(value.end()){};
-            token(){};
-            token(const TOKENTYPE type, const string::const_iterator& begin, const string::const_iterator& end): type(type), begin(begin), end(end){};
-            void set_next(const TOKENTYPE type, const string::const_iterator& begin, const string::const_iterator& end)
+            Token(const TOKENTYPE type, const string &value) : type(type), begin(value.begin()), end(value.end()){};
+            Token(){};
+            Token(const TOKENTYPE type, const string::const_iterator &begin, const string::const_iterator &end) : type(type), begin(begin), end(end){};
+            void connect(const TOKENTYPE type, const string::const_iterator &begin, const string::const_iterator &end)
             {
-                this->next = new token(type, begin, end);
+                this->next = new Token(type, begin, end);
             }
-            token *get_next(void) const
+            Token *get_next(void) const
             {
                 return this->next;
             }
@@ -58,9 +59,10 @@ namespace np_calculator
                 return this->type == type;
             }
         };
-        void tokenize(const string &expr, bool &err_flag, token* head);
-        void go_next_token(token *cur);
+        void tokenize(const string &expr, bool &err_flag, Token *head);
+        void go_next_token(Token *cur);
         void go_next_word(string::const_iterator &);
+        string::const_iterator sig(string::const_iterator &);
         string::const_iterator num(string::const_iterator &);
         bool is_end(string::const_iterator &);
         string::const_iterator num(string::const_iterator &begin)
@@ -86,7 +88,6 @@ namespace np_calculator
             go_next_word(begin);
             return *begin == '\n' || *begin == '\0';
         }
-
         void go_next_word(string::const_iterator &i)
         {
             while (*i == ' ')
@@ -94,13 +95,13 @@ namespace np_calculator
                 ++i;
             }
         }
-        void go_next_token(token *cur)
-        {
-            token *next = cur->get_next();
-            delete cur;
-            cur = next;
-        }
 
+        void go_next_token(Token *cur)
+        {
+            Token *next = cur->get_next();
+            delete cur;
+            *cur = *next;
+        }
     }
     namespace new_liner
     {
@@ -125,20 +126,44 @@ namespace np_calculator
     using new_liner::new_line;
     using new_liner::set_attr;
     using new_liner::set_mark;
-    using tokenizer::token;
+    using tokenizer::Token;
     using tokenizer::tokenize;
     namespace parser
     {
         using tokenizer::go_next_token;
         using tokenizer::TOKENTYPE;
-
+        bool consume(TOKENTYPE type, Token &i)
+        {
+            return i.is_type(type);
+        }
+        void expect(TOKENTYPE type, Token &i)
+        {
+            if (i.is_type(type))
+            {
+                return;
+            }
+            else if (type == TOKENTYPE::NUM)
+            {
+                error_at(0, "expected NUM alternative to %s", i.get_string());
+            }
+        }
         enum NODETYPE
         {
             NUM,
         };
-
+        int stodigit(const string &i);
+        int stodigit(const string &i)
+        {
+            int ans = 0;
+            for (auto c : i)
+            {
+                ans *= 10;
+                ans += c - '0';
+            }
+            return ans;
+        }
         class Node;
-        Node parse(const token &head);
+        Node parse(const Token &head);
         class Node
         {
         private:
