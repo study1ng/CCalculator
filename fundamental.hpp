@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cstdarg>
 #include <memory>
+#include <map>
+#include <tuple>
 
 namespace np_calculator
 {
@@ -13,8 +15,9 @@ namespace np_calculator
     using std::endl;
     using std::string;
     using std::unique_ptr;
+    using std::pair;
+    using std::map;
     bool is_quit(string);
-
 
     int calcaulator(void);
     namespace new_liner

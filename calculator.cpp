@@ -1,4 +1,5 @@
-#include "parser.hpp"
+#include "calculate.hpp"
+
 namespace np_calculator
 {
     using parser::parse;
@@ -34,7 +35,7 @@ namespace np_calculator
             {
                 continue;
             }
-            int ans = parser::calculate(head);
+            int ans = calculate::calculate(head);
             if (err_flag)
             {
                 continue;

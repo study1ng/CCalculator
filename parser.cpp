@@ -32,16 +32,6 @@ namespace np_calculator
                 return;
             }
         }
-        int stodigit(const string &i)
-        {
-            int ans = 0;
-            for (auto c : i)
-            {
-                ans *= 10;
-                ans += c - '0';
-            }
-            return ans;
-        }
     }
 
     namespace parser
@@ -74,10 +64,40 @@ namespace np_calculator
             cur = Node(NUM, begin.get_begin(), begin.get_end());
             go_next_token(&begin);
         }
-        // primary = num | '(' expr ')'
+        void variable(Token &begin, const string &expr, Node &cur)
+        {
+            expect(TOKENTYPE::VAR, begin, expr);
+            if (err_flag)
+            {
+                return;
+            }
+            cur = Node(VAR, begin.get_begin(), begin.get_end());
+            go_next_token(&begin);
+        }
+        void definition(Token &begin, const string &exp, Node &cur)
+        {
+            variable(begin, exp, cur);
+            if (err_flag)
+            {
+                return;
+            }
+            if (begin.get_string() == ":=")
+            {
+                cur.connect_l(new Node(DEF_EQ, begin.get_begin(), begin.get_end()));
+                go_next_token(&begin);
+                Node* lhs = new Node;
+                expr(begin, exp, *lhs);
+                cur.get_lhs()->connect_l(lhs);
+            }
+        }
+        // primary = definition | num | '(' expr ')'
         void primary(Token &begin, const string &exp, Node &head)
         {
-            if (begin.get_type() == TOKENTYPE::NUM)
+            if (begin.get_type() == TOKENTYPE::VAR)
+            {
+                definition(begin, exp, head);
+            }
+            else if (begin.get_type() == TOKENTYPE::NUM)
             {
                 num(begin, exp, head);
             }
@@ -173,38 +193,6 @@ namespace np_calculator
             expr(cur, exp, head);
             return head;
         };
-        int calculate(const Node &begin)
-        {
-            Node cur = begin;
-            if (cur.get_type() == NUM)
-            {
-                return stodigit(cur.get_value());
-            }
-            if (cur.get_type() == PLUS)
-            {
-                return calculate(*cur.get_lhs()) + calculate(*cur.get_rhs());
-            }
-            if (cur.get_type() == MINUS)
-            {
-                return calculate(*cur.get_lhs()) - calculate(*cur.get_rhs());
-            }
-            if (cur.get_type() == MUL)
-            {
-                return calculate(*cur.get_lhs()) * calculate(*cur.get_rhs());
-            }
-            if (cur.get_type() == DIV)
-            {
-                return calculate(*cur.get_lhs()) / calculate(*cur.get_rhs());
-            }
-            if (cur.get_type() == MOD)
-            {
-                return calculate(*cur.get_lhs()) % calculate(*cur.get_rhs());
-            }
-            else
-            {
-                error_at(0, "function calculate had type other than NUM, PLUS, MINUS");
-                return 0;
-            }
-        }
+
     }
 }

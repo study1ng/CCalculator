@@ -15,19 +15,21 @@ namespace np_calculator
             MUL,
             DIV,
             MOD,
+            VAR,
+            DEF_EQ,
         };
 
         using tokenizer::go_next_token;
         using tokenizer::TOKENTYPE;
         void num(Token &begin, const string &expr, Node &cur);
+        void variable(Token &begin, const string &expr, Node &cur);
+        void definition(Token &begin, const string &exp, Node &cur);
         void primary(Token &begin, const string &exp, Node &head);
         void mul(Token &begin, const string &exp, Node &head);
         void expr(Token &begin, const string &exp, Node &head);
-        int calculate(const Node &begin);
         bool consume(TOKENTYPE type, Token &i);
         void expect(TOKENTYPE type, Token &i, const string &expr);
         void expect(const char *expected, Token &actual, const string &expr);
-        int stodigit(const string &i);
         Node parse(const Token &begin, const string &exp);
     }
 

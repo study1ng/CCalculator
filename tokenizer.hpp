@@ -10,6 +10,7 @@ namespace np_calculator
             NUM,
             END,
             SIGN,
+            VAR,
         };
         class Token;
         class Token
@@ -62,6 +63,7 @@ namespace np_calculator
         void go_next_word(string::const_iterator &);
         string::const_iterator sig(string::const_iterator &);
         string::const_iterator num(string::const_iterator &);
+        string::const_iterator var(string::const_iterator &begin);
         bool is_end(string::const_iterator &);
     }
 }

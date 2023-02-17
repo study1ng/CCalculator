@@ -7,16 +7,22 @@ namespace np_calculator
         string::const_iterator num(string::const_iterator &begin)
         {
             go_next_word(begin);
-            if (!('0' <= *begin && *begin <= '9'))
-            {
-                return begin;
-            }
             while (*begin == '0')
             {
                 ++begin;
             }
             string::const_iterator cur = begin;
             while ('0' <= *cur && *cur <= '9')
+            {
+                ++cur;
+            }
+            return cur;
+        }
+        string::const_iterator var(string::const_iterator &begin)
+        {
+            go_next_word(begin);
+            string::const_iterator cur = begin + 1;
+            while (('0' <= *cur && *cur <= '9') || ('a' <= *cur && *cur <= 'z') || ('A' <= *cur && *cur <= 'Z'))
             {
                 ++cur;
             }
@@ -46,9 +52,9 @@ namespace np_calculator
         {
             string::const_iterator cur = expr.begin();
             go_next_word(cur);
-            if (!('0' <= *cur && *cur <= '9') && *cur != '(')
+            if (!('0' <= *cur && *cur <= '9') && *cur != '(' && *cur != '$')
             {
-                error_at(cur - expr.begin(), "expected the first token as number");
+                error_at(cur - expr.begin(), "expected the first token as number or variable");
                 err_flag = 1;
                 return;
             }
@@ -62,6 +68,11 @@ namespace np_calculator
             {
                 end = cur + 1;
                 head = *(new Token(SIGN, cur, end));
+            }
+            else if (*cur == '$')
+            {
+                end = var(cur);
+                head = *(new Token(VAR, cur, end));
             }
             Token *tcur = &head;
             cur = end;
@@ -81,6 +92,22 @@ namespace np_calculator
                     end = num(cur);
                     tcur->connect(NUM, cur, end);
                     tcur = tcur->get_next();
+                    cur = end;
+                    continue;
+                }
+                if (*cur == '$')
+                {
+                    end = var(cur);
+                    tcur -> connect(VAR, cur, end);
+                    tcur = tcur -> get_next();
+                    cur = end;
+                    continue;
+                }
+                if (*cur == ':' && *(cur + 1) == '=')
+                {
+                    end = cur + 2;
+                    tcur -> connect(SIGN, cur, end);
+                    tcur = tcur -> get_next();
                     cur = end;
                     continue;
                 }
