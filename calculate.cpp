@@ -36,7 +36,14 @@ namespace np_calculator
             }
             if (cur.get_type() == parser::NODETYPE::DIV)
             {
-                return calculate(*cur.get_lhs()) / calculate(*cur.get_rhs());
+                int lhs = calculate(*cur.get_lhs());
+                int rhs = calculate(*cur.get_rhs());
+                if (rhs == 0)
+                {
+                    error_at(0, "zero division error");
+                    return 1;
+                }
+                return lhs / rhs;
             }
             if (cur.get_type() == parser::NODETYPE::MOD)
             {

@@ -13,15 +13,24 @@ namespace np_calculator
         {
             err_flag = false;
             ++line_number;
+            set_font("bold");
+            set_ccolor("purple");
             set_attr("exp");
             new_line();
             string expression;
             getline(cin, expression);
             if (is_quit(expression))
             {
+                set_font("bold");
+                set_ccolor("red");
                 set_attr("cmd");
                 new_line();
+                set_font("italic");
+                set_ccolor("red");
+                use_customized_font();
                 cout << "get quit command at line " << line_number << endl;
+                use_default();
+                set_default();
                 return 0;
             }
             tokenizer::Token cur;
@@ -40,9 +49,16 @@ namespace np_calculator
             {
                 continue;
             }
+            set_font("bold");
+            set_ccolor("green");
             set_attr("ans");
             new_line();
+            set_font("bold");
+            set_ccolor("green");
+            use_customized_font();
             cout << ans << endl;
+            set_default();
+            use_default();
         };
     }
 }
