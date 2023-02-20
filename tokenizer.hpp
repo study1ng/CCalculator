@@ -60,10 +60,8 @@ namespace np_calculator
         };
         void tokenize(const string &expr, Token &head);
         void go_next_token(Token *cur);
-        void go_next_word(string::const_iterator &);
         string::const_iterator sig(string::const_iterator &);
         string::const_iterator num(string::const_iterator &);
         string::const_iterator var(string::const_iterator &begin);
-        bool is_end(string::const_iterator &);
     }
 }

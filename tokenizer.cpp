@@ -28,19 +28,6 @@ namespace np_calculator
             }
             return cur;
         }
-        bool is_end(string::const_iterator &begin)
-        {
-            go_next_word(begin);
-            return (*begin == '\n' || *begin == '\0');
-        }
-        void go_next_word(string::const_iterator &i)
-        {
-            while (*i == ' ' || *i == '\t')
-            {
-                ++i;
-            }
-        }
-
         void go_next_token(Token *cur)
         {
             Token *next = cur->get_next();

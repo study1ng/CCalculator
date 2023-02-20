@@ -1,4 +1,5 @@
 #include "calculate.hpp"
+#include "command.hpp"
 
 namespace np_calculator
 {
@@ -6,32 +7,34 @@ namespace np_calculator
 }
 namespace np_calculator
 {
+    int line_number = 0;
     int calculator(void)
     {
-        int line_number = 0;
         while (true)
         {
             err_flag = false;
             ++line_number;
-            set_font("bold");
-            set_ccolor("purple");
             set_attr("exp");
-            new_line();
+            newline();
             string expression;
             getline(cin, expression);
-            if (is_quit(expression))
+            command::check_command(expression);
+            if (command_flag)
             {
-                set_font("bold");
-                set_ccolor("red");
-                set_attr("cmd");
-                new_line();
-                set_font("italic");
-                set_ccolor("red");
-                use_customized_font();
-                cout << "get quit command at line " << line_number << endl;
-                use_default();
-                set_default();
+                command::Command i = command::tokenize(expression);
+                if (err_flag)
+                {
+                    continue;
+                }
+                command::do_command(i);
+            }
+            if (quit_flag)
+            {
                 return 0;
+            }
+            if (command_flag || err_flag)
+            {
+                continue;
             }
             tokenizer::Token cur;
             tokenizer::tokenize(expression, cur);
@@ -48,21 +51,27 @@ namespace np_calculator
             if (err_flag)
             {
                 continue;
-            }
-            set_font("bold");
-            set_ccolor("green");
+            }use_newline_customized_font();
             set_attr("ans");
-            new_line();
-            set_font("bold");
-            set_ccolor("green");
-            use_customized_font();
+            newline();
             cout << ans << endl;
-            set_default();
-            use_default();
-        };
+        }
     }
 }
 int main(void)
 {
-    return np_calculator::calculator();
+    try
+    {
+        np_calculator::calculator();
+        np_calculator::set_default();
+        np_calculator::use_default_font();
+        return 0;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        np_calculator::set_default();
+        np_calculator::use_default_font();
+        return 1;
+    }
 }
