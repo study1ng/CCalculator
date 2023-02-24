@@ -1,4 +1,5 @@
 #include "command.hpp"
+
 namespace np_calculator
 {
     bool quit_flag = false;
@@ -81,15 +82,15 @@ namespace np_calculator
                 return *command;
             }
             Param *pbegin;
-            string::const_iterator end = begin;               
+            string::const_iterator end = begin;
             while (*end == ' ')
-                {
-                    ++end;
-                }
+            {
+                ++end;
+            }
             while (*end != ' ' && *end != '\0')
-                {
-                    ++end;
-                }
+            {
+                ++end;
+            }
             pbegin = new Param(begin, end);
             Param *pcur = pbegin;
             begin = end;

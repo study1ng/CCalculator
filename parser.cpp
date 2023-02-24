@@ -38,14 +38,31 @@ namespace np_calculator
     {
         Node::Node(){};
         Node::Node(NODETYPE type) : type(type){};
-        Node::Node(NODETYPE type, const string::const_iterator &b, const string::const_iterator &e) : type(type), begin(b), end(e){};
-
+        Node::Node(NODETYPE type, const string::const_iterator &b, const string::const_iterator &e) : type(type), value(b, e){};
+        Node::~Node()
+        {
+            if (this->get_lhs() && !(this->get_lhs()->get_is_stocked()))
+            {
+                delete this->lhs;
+                this->lhs = nullptr;
+            }
+            if (this->get_rhs() && !(this->get_rhs()->get_is_stocked()))
+            {
+                delete this->rhs;
+                this->rhs = nullptr;
+            }
+            return;
+        }
         void Node::connect_l(Node *l) { this->lhs = l; }
+        void Node::stock(void)
+        {
+            this->is_stocked = true;
+        }
         void Node::connect_r(Node *r) { this->rhs = r; }
-        NODETYPE Node::get_type(void) { return this->type; }
-        string Node::get_value(void) { return string(begin, end); }
-        string::const_iterator Node::get_begin(void) { return begin; }
-        string::const_iterator Node::get_end(void) { return end; }
+        NODETYPE Node::get_type(void) const { return this->type; }
+        string Node::get_value(void) const { return value; }
+        string::const_iterator Node::get_begin(void) const { return value.begin(); }
+        string::const_iterator Node::get_end(void) const { return value.end(); }
         Node *Node::get_lhs(void) { return this->lhs; }
         Node *Node::get_rhs(void) { return this->rhs; }
     }
@@ -85,7 +102,7 @@ namespace np_calculator
             {
                 cur.connect_l(new Node(DEF_EQ, begin.get_begin(), begin.get_end()));
                 go_next_token(&begin);
-                Node* lhs = new Node;
+                Node *lhs = new Node;
                 expr(begin, exp, *lhs);
                 cur.get_lhs()->connect_l(lhs);
             }
@@ -186,12 +203,10 @@ namespace np_calculator
                 head.connect_r(rhs);
             }
         }
-        Node parse(const Token &begin, const string &exp)
+        void parse(const Token &begin, const string &exp, Node &head)
         {
             Token cur = begin;
-            Node head;
             expr(cur, exp, head);
-            return head;
         };
 
     }

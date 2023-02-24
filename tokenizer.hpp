@@ -25,9 +25,21 @@ namespace np_calculator
             Token(const TOKENTYPE type, const string &value) : type(type), begin(value.begin()), end(value.end()){};
             Token(){};
             Token(const TOKENTYPE type, const string::const_iterator &begin, const string::const_iterator &end) : type(type), begin(begin), end(end){};
-            void connect(const TOKENTYPE type, const string::const_iterator &begin, const string::const_iterator &end)
+            ~Token()
             {
-                this->next = new Token(type, begin, end);
+                if (this->next)
+                {
+                    delete this->next;
+                    this->next = nullptr;
+                }
+            }
+            void connect(Token *next)
+            {
+                this->next = next;
+            }
+            void make_next(const TOKENTYPE type, const string::const_iterator &begin, const string::const_iterator &end)
+            {
+                this->connect(new Token(type, begin, end));
             }
             Token *get_next(void) const
             {

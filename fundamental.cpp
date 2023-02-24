@@ -124,7 +124,7 @@ namespace np_calculator
             else if (color == "none")
             {
                 newline_background_color = 49;
-            }            
+            }
             else
             {
                 cout << "usage: set newline background color + [param]\nparam can be 'black', 'red', 'green', 'blown', 'blue', 'purple', 'gray', 'none";
@@ -156,11 +156,11 @@ namespace np_calculator
             {
                 newline_font.clear();
                 newline_font.emplace_back(0);
-            }            
+            }
             else
             {
                 cout << "usage: set newline font + [params]\nparams can be 'bold', 'italic', 'half_bright', 'under_bar', 'blink', 'none'"
-                << "if you put none in the params, none will replace any used font\n";
+                     << "if you put none in the params, none will replace any used font\n";
             }
         }
         void set_newline_font(int font)
@@ -291,7 +291,7 @@ namespace np_calculator
             else
             {
                 cout << "usage: set default font + [params]\nparams can be 'bold', 'italic', 'half_bright', 'under_bar', 'blink', 'none'"
-                << "if you put none in the params, none will replace any used font";
+                     << "if you put none in the params, none will replace any used font";
             }
         }
         void set_default_font(int font)
@@ -320,10 +320,10 @@ namespace np_calculator
         void use_default_font()
         {
             cout << "\033[";
-            for (const int& i: default_font)
+            for (const int &i : default_font)
             {
                 cout << i << ";";
-            } 
+            }
             cout << default_char_color << ";" << default_background_color << "m";
         }
         void newline(void)

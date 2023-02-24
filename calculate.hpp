@@ -7,7 +7,7 @@ namespace np_calculator
         using parser::Node;
         int stodigit(const string &i);
         int stodigit(string::const_iterator begin, string::const_iterator end);
-        int calculate(const Node &begin);
+        int calculate(Node &begin);
         enum VARTYPE
         {
             INT,
@@ -15,8 +15,8 @@ namespace np_calculator
         struct VarStatus
         {
             VARTYPE type;
-            string value;
-            VarStatus(VARTYPE type, const string::const_iterator &begin, const string::const_iterator &end): type(type), value(begin, end){}
+            Node *value;
+            VarStatus(VARTYPE type, Node *value) : type(type), value(value) {}
         };
     }
 }

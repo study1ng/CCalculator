@@ -14,30 +14,29 @@ namespace np_calculator
             }
             return ans;
         }
-        int calculate(const Node &begin)
+        int calculate(Node &begin)
         {
             static map<string, VarStatus> var_list;
-            Node cur = begin;
-            if (cur.get_type() == parser::NODETYPE::NUM)
+            if (begin.get_type() == parser::NODETYPE::NUM)
             {
-                return stodigit(cur.get_value());
+                return stodigit(begin.get_value());
             }
-            if (cur.get_type() == parser::NODETYPE::PLUS)
+            if (begin.get_type() == parser::NODETYPE::PLUS)
             {
-                return calculate(*cur.get_lhs()) + calculate(*cur.get_rhs());
+                return calculate(*begin.get_lhs()) + calculate(*begin.get_rhs());
             }
-            if (cur.get_type() == parser::NODETYPE::MINUS)
+            if (begin.get_type() == parser::NODETYPE::MINUS)
             {
-                return calculate(*cur.get_lhs()) - calculate(*cur.get_rhs());
+                return calculate(*begin.get_lhs()) - calculate(*begin.get_rhs());
             }
-            if (cur.get_type() == parser::NODETYPE::MUL)
+            if (begin.get_type() == parser::NODETYPE::MUL)
             {
-                return calculate(*cur.get_lhs()) * calculate(*cur.get_rhs());
+                return calculate(*begin.get_lhs()) * calculate(*begin.get_rhs());
             }
-            if (cur.get_type() == parser::NODETYPE::DIV)
+            if (begin.get_type() == parser::NODETYPE::DIV)
             {
-                int lhs = calculate(*cur.get_lhs());
-                int rhs = calculate(*cur.get_rhs());
+                int lhs = calculate(*begin.get_lhs());
+                int rhs = calculate(*begin.get_rhs());
                 if (rhs == 0)
                 {
                     error_at(0, "zero division error");
@@ -45,30 +44,31 @@ namespace np_calculator
                 }
                 return lhs / rhs;
             }
-            if (cur.get_type() == parser::NODETYPE::MOD)
+            if (begin.get_type() == parser::NODETYPE::MOD)
             {
-                return calculate(*cur.get_lhs()) % calculate(*cur.get_rhs());
+                return calculate(*begin.get_lhs()) % calculate(*begin.get_rhs());
             }
-            if (cur.get_type() == parser::NODETYPE::VAR)
+            if (begin.get_type() == parser::NODETYPE::VAR)
             {
-                if (cur.get_lhs() && cur.get_lhs()->get_type() == parser::NODETYPE::DEF_EQ)
+                if (begin.get_lhs() && begin.get_lhs()->get_type() == parser::NODETYPE::DEF_EQ)
                 {
-                    if (var_list.count(cur.get_value()))
+                    begin.get_lhs()->get_lhs()->stock();
+                    if (var_list.count(begin.get_value()))
                     {
-                        var_list.at(cur.get_value()) = VarStatus(INT, cur.get_lhs()->get_lhs()->get_begin(), cur.get_lhs()->get_lhs()->get_end());
+                        var_list.at(begin.get_value()) = VarStatus(INT, begin.get_lhs()->get_lhs());
                     }
                     else
                     {
-                        var_list.insert(pair<string, VarStatus>(cur.get_value(), VarStatus(INT, cur.get_lhs()->get_lhs()->get_begin(), cur.get_lhs()->get_lhs()->get_end())));
+                        var_list.insert(pair<string, VarStatus>(begin.get_value(), VarStatus(INT, begin.get_lhs()->get_lhs())));
                     }
-                    return calculate(*(cur.get_lhs()->get_lhs()));
+                    return calculate(*(begin.get_lhs()->get_lhs()));
                 }
-                else if (!(cur.get_lhs()))
+                else if (!(begin.get_lhs()))
                 {
-                    VarStatus stat = var_list.at(cur.get_value());
+                    VarStatus stat = var_list.at(begin.get_value());
                     if (stat.type == INT)
                     {
-                        return stodigit(stat.value);
+                        return calculate(*(stat.value));
                     }
                 }
             }

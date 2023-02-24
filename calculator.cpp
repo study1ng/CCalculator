@@ -7,6 +7,8 @@ namespace np_calculator
 }
 namespace np_calculator
 {
+    tokenizer::Token *cur = nullptr;
+    parser::Node *head = nullptr;
     int line_number = 0;
     int calculator(void)
     {
@@ -36,22 +38,28 @@ namespace np_calculator
             {
                 continue;
             }
-            tokenizer::Token cur;
-            tokenizer::tokenize(expression, cur);
+            cur = new tokenizer::Token();
+            tokenizer::tokenize(expression, *cur);
             if (err_flag)
             {
                 continue;
             }
-            parser::Node head = parse(cur, expression);
+            head = new parser::Node();
+            parse(*cur, expression, *head);
+            delete cur;
+            cur = nullptr;
             if (err_flag)
             {
                 continue;
             }
-            int ans = calculate::calculate(head);
+            int ans = calculate::calculate(*head);
+            delete head;
+            head = nullptr;
             if (err_flag)
             {
                 continue;
-            }use_newline_customized_font();
+            }
+            use_newline_customized_font();
             set_attr("ans");
             newline();
             cout << ans << endl;
@@ -67,7 +75,7 @@ int main(void)
         np_calculator::use_default_font();
         return 0;
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cerr << e.what() << '\n';
         np_calculator::set_default();

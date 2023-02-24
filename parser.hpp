@@ -27,10 +27,10 @@ namespace np_calculator
         void primary(Token &begin, const string &exp, Node &head);
         void mul(Token &begin, const string &exp, Node &head);
         void expr(Token &begin, const string &exp, Node &head);
+        void parse(const Token &begin, const string &exp, Node &head);
         bool consume(TOKENTYPE type, Token &i);
         void expect(TOKENTYPE type, Token &i, const string &expr);
         void expect(const char *expected, Token &actual, const string &expr);
-        Node parse(const Token &begin, const string &exp);
     }
 
     namespace parser
@@ -39,7 +39,8 @@ namespace np_calculator
         {
         private:
             NODETYPE type;
-            string::const_iterator begin, end;
+            string value;
+            bool is_stocked = false;
             Node *lhs = nullptr;
             Node *rhs = nullptr;
 
@@ -47,13 +48,22 @@ namespace np_calculator
             Node();
             Node(NODETYPE type);
             Node(NODETYPE type, const string::const_iterator &b, const string::const_iterator &e);
+            ~Node();
             void connect_l(Node *l);
-
+            void stock(void);
+            void unstock(void)
+            {
+                this->is_stocked = false;
+            }
+            bool get_is_stocked(void)
+            {
+                return this->is_stocked;
+            }
             void connect_r(Node *r);
-            NODETYPE get_type();
-            string get_value();
-            string::const_iterator get_begin();
-            string::const_iterator get_end();
+            NODETYPE get_type() const;
+            string get_value() const;
+            string::const_iterator get_begin() const;
+            string::const_iterator get_end() const;
             Node *get_lhs(void);
             Node *get_rhs(void);
         };

@@ -16,14 +16,14 @@ namespace np_calculator
     using std::cin;
     using std::cout;
     using std::endl;
+    using std::ifstream;
     using std::map;
+    using std::ofstream;
     using std::pair;
+    using std::setw;
     using std::string;
     using std::unique_ptr;
     using std::vector;
-    using std::ifstream;
-    using std::ofstream;
-    using std::setw;
     extern int line_number;
     int calcaulator(void);
     void go_next_word(string::const_iterator &);
@@ -64,14 +64,14 @@ namespace np_calculator
     using newliner::newline;
     using newliner::set_attr;
     using newliner::set_default;
+    using newliner::set_default_background_color;
+    using newliner::set_default_char_color;
+    using newliner::set_default_font;
     using newliner::set_mark;
     using newliner::set_newline_background_color;
     using newliner::set_newline_char_color;
     using newliner::set_newline_font;
-    using newliner::set_default_font;
     using newliner::use_default_font;
-    using newliner::set_default_background_color;
-    using newliner::set_default_char_color;
     using newliner::use_newline_customized_font;
     namespace error
     {

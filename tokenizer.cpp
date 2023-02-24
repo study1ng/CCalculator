@@ -31,7 +31,6 @@ namespace np_calculator
         void go_next_token(Token *cur)
         {
             Token *next = cur->get_next();
-            delete cur;
             *cur = *next;
         }
 
@@ -69,7 +68,7 @@ namespace np_calculator
                 if (*cur == '+' || *cur == '-' || *cur == '*' || *cur == '/' || *cur == '%' || *cur == '(' || *cur == ')')
                 {
                     end = cur + 1;
-                    tcur->connect(SIGN, cur, end);
+                    tcur->make_next(SIGN, cur, end);
                     tcur = tcur->get_next();
                     cur = end;
                     continue;
@@ -77,7 +76,7 @@ namespace np_calculator
                 if ('0' <= *cur && *cur <= '9')
                 {
                     end = num(cur);
-                    tcur->connect(NUM, cur, end);
+                    tcur->make_next(NUM, cur, end);
                     tcur = tcur->get_next();
                     cur = end;
                     continue;
@@ -85,16 +84,16 @@ namespace np_calculator
                 if (*cur == '$')
                 {
                     end = var(cur);
-                    tcur -> connect(VAR, cur, end);
-                    tcur = tcur -> get_next();
+                    tcur->make_next(VAR, cur, end);
+                    tcur = tcur->get_next();
                     cur = end;
                     continue;
                 }
                 if (*cur == ':' && *(cur + 1) == '=')
                 {
                     end = cur + 2;
-                    tcur -> connect(SIGN, cur, end);
-                    tcur = tcur -> get_next();
+                    tcur->make_next(SIGN, cur, end);
+                    tcur = tcur->get_next();
                     cur = end;
                     continue;
                 }
@@ -102,7 +101,7 @@ namespace np_calculator
                 err_flag = 1;
                 return;
             }
-            tcur->connect(END, cur, ++cur);
+            tcur->make_next(END, cur, ++cur);
         }
     }
 }
